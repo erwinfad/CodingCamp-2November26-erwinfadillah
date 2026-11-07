@@ -1,0 +1,647 @@
+/* ============================================================
+   Life Dashboard — css/style.css
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. CSS Reset & Box-Sizing
+   ------------------------------------------------------------ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ------------------------------------------------------------
+   2. Custom Properties (Design Tokens)
+   ------------------------------------------------------------ */
+:root {
+  /* Colors */
+  --color-bg: #f0f2f5;
+  --color-surface: #ffffff;
+  --color-primary: #4f6ef7;
+  --color-primary-hover: #3a58e0;
+  --color-danger: #e74c3c;
+  --color-danger-hover: #c0392b;
+  --color-success: #27ae60;
+  --color-text: #1a1a2e;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-input-bg: #f9fafb;
+
+  /* Typography */
+  --font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont,
+                 'Helvetica Neue', Arial, sans-serif;
+  --font-size-base: 1rem;        /* 16px */
+  --font-size-sm: 0.875rem;      /* 14px */
+  --font-size-xs: 0.75rem;       /* 12px */
+  --font-size-lg: 1.125rem;      /* 18px */
+  --font-size-xl: 1.5rem;        /* 24px */
+  --font-size-2xl: 2rem;         /* 32px */
+  --font-size-3xl: 3rem;         /* 48px */
+  --line-height: 1.6;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* Card / Widget */
+  --widget-padding: 1.5rem;
+  --widget-radius: 1rem;
+  --widget-shadow: 0 2px 8px rgba(0, 0, 0, 0.08),
+                   0 1px 2px rgba(0, 0, 0, 0.04);
+  --widget-shadow-hover: 0 6px 24px rgba(0, 0, 0, 0.12),
+                         0 2px 6px rgba(0, 0, 0, 0.06);
+
+  /* Input / Button */
+  --input-radius: 0.5rem;
+  --btn-radius: 0.5rem;
+  --btn-height: 2.5rem;
+  --input-height: 2.5rem;
+
+  /* Transition */
+  --transition: 0.18s ease;
+}
+
+/* ------------------------------------------------------------
+   3. Base Typography & Body
+   ------------------------------------------------------------ */
+html {
+  font-size: 16px;
+  /* Prevent horizontal overflow globally */
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  min-width: 320px;
+  padding: var(--space-6) var(--space-4);
+}
+
+h2 {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration: underline;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--btn-radius);
+  height: var(--btn-height);
+  padding: 0 var(--space-4);
+  transition: background-color var(--transition), opacity var(--transition),
+              box-shadow var(--transition), transform var(--transition);
+  white-space: nowrap;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+input[type="text"],
+input[type="url"] {
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  background-color: var(--color-input-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--input-radius);
+  height: var(--input-height);
+  padding: 0 var(--space-3);
+  width: 100%;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.15);
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------------
+   4. Dashboard Layout — 2×2 Grid on wide screens
+   ------------------------------------------------------------ */
+#dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-6);
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ------------------------------------------------------------
+   5. Widget Card — shared card styles
+   ------------------------------------------------------------ */
+.widget {
+  background-color: var(--color-surface);
+  border-radius: var(--widget-radius);
+  box-shadow: var(--widget-shadow);
+  padding: var(--widget-padding);
+  transition: box-shadow var(--transition);
+  min-width: 0; /* prevent grid blowout */
+  overflow: hidden;
+}
+
+.widget:hover {
+  box-shadow: var(--widget-shadow-hover);
+}
+
+.widget-title {
+  margin-bottom: var(--space-5);
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+/* ------------------------------------------------------------
+   6. Greeting Widget
+   ------------------------------------------------------------ */
+#greeting-widget {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+#greeting-time {
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+#greeting-date {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+#greeting-text {
+  margin-top: var(--space-2);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* ------------------------------------------------------------
+   7. Focus Timer Widget
+   ------------------------------------------------------------ */
+#timer-widget {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+#timer-display {
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  padding: var(--space-4) var(--space-8);
+  background-color: var(--color-bg);
+  border-radius: 0.75rem;
+  min-width: 7rem;
+}
+
+.timer-controls {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#timer-btn-start {
+  background-color: var(--color-success);
+  color: #fff;
+}
+
+#timer-btn-start:hover {
+  background-color: #219150;
+}
+
+#timer-btn-stop {
+  background-color: var(--color-danger);
+  color: #fff;
+}
+
+#timer-btn-stop:hover {
+  background-color: var(--color-danger-hover);
+}
+
+#timer-btn-reset {
+  background-color: var(--color-text-muted);
+  color: #fff;
+}
+
+#timer-btn-reset:hover {
+  background-color: #4b5563;
+}
+
+/* Completion message — hidden by default */
+#timer-complete-msg {
+  display: none;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1.5px solid #6ee7b7;
+  border-radius: var(--input-radius);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* JS removes [hidden] and sets display via .visible class OR
+   the app can toggle the hidden attribute — support both */
+#timer-complete-msg:not([hidden]) {
+  display: block;
+}
+
+/* ------------------------------------------------------------
+   8. To-Do List Widget
+   ------------------------------------------------------------ */
+#todo-widget {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.todo-input-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.todo-input-row input {
+  flex: 1;
+}
+
+#todo-add-btn {
+  background-color: var(--color-primary);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+#todo-add-btn:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Task list */
+#todo-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Individual task item — column so view/edit rows stack naturally */
+.todo-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--input-radius);
+  background-color: var(--color-input-bg);
+  transition: border-color var(--transition);
+}
+
+.todo-item:hover {
+  border-color: var(--color-primary);
+}
+
+/* Checkbox / toggle button */
+.todo-toggle {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background-color: #fff;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.todo-toggle[aria-pressed="true"],
+.todo-item.done .todo-toggle {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.todo-toggle[aria-pressed="true"]::after,
+.todo-item.done .todo-toggle::after {
+  content: '✓';
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Task text */
+.todo-text {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  word-break: break-word;
+  min-width: 0;
+}
+
+/* Done / strikethrough state */
+.todo-item.done .todo-text,
+.todo-text.done {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+/* Edit input inside task row */
+.todo-edit-input {
+  flex: 1;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  background-color: #fff;
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--input-radius);
+  height: 2rem;
+  padding: 0 var(--space-2);
+  min-width: 0;
+}
+
+.todo-edit-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.15);
+}
+
+/* View / edit container rows inside each task item */
+.todo-item-view,
+.todo-item-edit {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+/* Empty state message */
+.todo-empty {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+  padding: var(--space-4) 0;
+}
+
+/* Action buttons on task items */
+.todo-btn-edit,
+.todo-btn-confirm-edit,
+.todo-btn-cancel-edit,
+.todo-btn-save,
+.todo-btn-cancel,
+.todo-btn-delete {
+  flex-shrink: 0;
+  height: 2rem;
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-xs);
+}
+
+.todo-btn-edit {
+  background-color: #e8eeff;
+  color: var(--color-primary);
+}
+
+.todo-btn-edit:hover {
+  background-color: #c7d4ff;
+}
+
+/* Confirm-edit (Simpan) button — same visual as save */
+.todo-btn-confirm-edit,
+.todo-btn-save {
+  background-color: var(--color-success);
+  color: #fff;
+}
+
+.todo-btn-confirm-edit:hover,
+.todo-btn-save:hover {
+  background-color: #219150;
+}
+
+/* Cancel-edit (Batal) button */
+.todo-btn-cancel-edit,
+.todo-btn-cancel {
+  background-color: var(--color-text-muted);
+  color: #fff;
+}
+
+.todo-btn-cancel-edit:hover,
+.todo-btn-cancel:hover {
+  background-color: #4b5563;
+}
+
+.todo-btn-delete {
+  background-color: #fde8e8;
+  color: var(--color-danger);
+}
+
+.todo-btn-delete:hover {
+  background-color: #f9c0c0;
+}
+
+/* ------------------------------------------------------------
+   9. Quick Links Widget
+   ------------------------------------------------------------ */
+#links-widget {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.links-input-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.links-input-row input {
+  flex: 1;
+  min-width: 8rem;
+}
+
+#links-add-btn {
+  background-color: var(--color-primary);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+#links-add-btn:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Validation error message */
+#links-error-msg {
+  min-height: 1.25rem;
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+  font-weight: 500;
+}
+
+#links-error-msg:empty {
+  display: none;
+}
+
+/* Links list */
+#links-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Individual link item */
+.link-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--input-radius);
+  background-color: var(--color-input-bg);
+  transition: border-color var(--transition);
+}
+
+.link-item:hover {
+  border-color: var(--color-primary);
+}
+
+.link-item a {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.link-item a:hover {
+  text-decoration: underline;
+}
+
+.link-btn-delete {
+  flex-shrink: 0;
+  height: 2rem;
+  padding: 0 var(--space-3);
+  font-size: var(--font-size-xs);
+  background-color: #fde8e8;
+  color: var(--color-danger);
+}
+
+.link-btn-delete:hover {
+  background-color: #f9c0c0;
+}
+
+/* ------------------------------------------------------------
+   10. Responsive — single column at ≤ 768px
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+  body {
+    padding: var(--space-4) var(--space-3);
+  }
+
+  #dashboard {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  #greeting-time,
+  #timer-display {
+    font-size: var(--font-size-2xl);
+  }
+
+  .timer-controls {
+    gap: var(--space-2);
+  }
+
+  .links-input-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .links-input-row button {
+    width: 100%;
+  }
+}
+
+/* Extra-small safety — no horizontal scroll at 320px */
+@media (max-width: 360px) {
+  body {
+    padding: var(--space-3) var(--space-2);
+  }
+
+  #greeting-time,
+  #timer-display {
+    font-size: 1.75rem;
+  }
+
+  .todo-input-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .todo-input-row button {
+    width: 100%;
+  }
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="dashboard">
+
+    <!-- Greeting Widget -->
+    <section id="greeting-widget" class="widget">
+      <div id="greeting-time" aria-live="polite" aria-label="Waktu saat ini"></div>
+      <div id="greeting-date" aria-label="Tanggal saat ini"></div>
+      <div id="greeting-text" aria-label="Salam"></div>
+    </section>
+
+    <!-- Focus Timer Widget -->
+    <section id="timer-widget" class="widget">
+      <h2 class="widget-title">Focus Timer</h2>
+      <div id="timer-display" aria-live="polite" aria-label="Sisa waktu timer">25:00</div>
+      <div class="timer-controls">
+        <button id="timer-btn-start" type="button">Start</button>
+        <button id="timer-btn-stop" type="button">Stop</button>
+        <button id="timer-btn-reset" type="button">Reset</button>
+      </div>
+      <div id="timer-complete-msg" role="alert" aria-live="assertive" hidden>
+        Sesi Pomodoro selesai! Waktunya istirahat. 🎉
+      </div>
+    </section>
+
+    <!-- To-Do List Widget -->
+    <section id="todo-widget" class="widget">
+      <h2 class="widget-title">To-Do List</h2>
+      <div class="todo-input-row">
+        <label for="todo-input" class="sr-only">Tambah tugas baru</label>
+        <input
+          type="text"
+          id="todo-input"
+          placeholder="Tambah tugas baru..."
+          aria-label="Teks tugas baru"
+        />
+        <button id="todo-add-btn" type="button" aria-label="Tambah tugas">Tambah</button>
+      </div>
+      <ul id="todo-list" aria-label="Daftar tugas"></ul>
+    </section>
+
+    <!-- Quick Links Widget -->
+    <section id="links-widget" class="widget">
+      <h2 class="widget-title">Quick Links</h2>
+      <div class="links-input-row">
+        <label for="links-label-input" class="sr-only">Nama tautan</label>
+        <input
+          type="text"
+          id="links-label-input"
+          placeholder="Nama tautan"
+          aria-label="Nama tautan"
+          maxlength="50"
+        />
+        <label for="links-url-input" class="sr-only">URL tautan</label>
+        <input
+          type="url"
+          id="links-url-input"
+          placeholder="https://contoh.com"
+          aria-label="URL tautan"
+        />
+        <button id="links-add-btn" type="button" aria-label="Tambah tautan">Tambah</button>
+      </div>
+      <div id="links-error-msg" role="alert" aria-live="polite"></div>
+      <ul id="links-list" aria-label="Daftar tautan"></ul>
+    </section>
+
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

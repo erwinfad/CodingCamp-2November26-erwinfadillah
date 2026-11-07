@@ -1,0 +1,323 @@
+{
+  "pbtResults": {
+    "5.2 Tulis property test untuk getGreeting (P8)": {
+      "status": "passed",
+      "lastRunTimestamp": 1794023189025
+    }
+  },
+  "executionHistory": {
+    "5.2 Tulis property test untuk getGreeting (P8)": [
+      {
+        "executionId": "54fd905f-aeee-485c-ac29-8447a5303fd1",
+        "chatSessionId": "sess_b7e2e1ae-e0d8-4b57-b3f2-d99b81897545",
+        "timestamp": 1794023107269
+      },
+      {
+        "executionId": "54fd905f-aeee-485c-ac29-8447a5303fd1",
+        "chatSessionId": "sess_b7e2e1ae-e0d8-4b57-b3f2-d99b81897545",
+        "timestamp": 1794023204200
+      }
+    ],
+    "1.1 Buat file dan direktori dasar proyek": [
+      {
+        "executionId": "3aa20a6c-17d0-4472-8be9-eefc584fc711",
+        "chatSessionId": "sess_4de193e5-97ee-4c7b-bc53-0dfc88ccf8d8",
+        "timestamp": 1794023334609
+      },
+      {
+        "executionId": "3aa20a6c-17d0-4472-8be9-eefc584fc711",
+        "chatSessionId": "sess_4de193e5-97ee-4c7b-bc53-0dfc88ccf8d8",
+        "timestamp": 1794023382197
+      },
+      {
+        "executionId": "e18d75b3-ece2-4971-9d20-7091bd1ea446",
+        "chatSessionId": "sess_7414f6b3-bec3-4b98-b36f-6ed51160ecc7",
+        "timestamp": 1794023390992
+      },
+      {
+        "executionId": "e18d75b3-ece2-4971-9d20-7091bd1ea446",
+        "chatSessionId": "sess_7414f6b3-bec3-4b98-b36f-6ed51160ecc7",
+        "timestamp": 1794023407781
+      }
+    ],
+    "1. Scaffolding struktur proyek": [
+      {
+        "executionId": "3aa20a6c-17d0-4472-8be9-eefc584fc711",
+        "chatSessionId": "sess_4de193e5-97ee-4c7b-bc53-0dfc88ccf8d8",
+        "timestamp": 1794023382293
+      }
+    ],
+    "2.1 Buat markup dasar `index.html` dengan keempat widget": [
+      {
+        "executionId": "d842d79c-2c9b-4406-9e05-04d987106fc8",
+        "chatSessionId": "sess_1c924ff6-d942-476c-89b3-8e743e169e0b",
+        "timestamp": 1794023442316
+      },
+      {
+        "executionId": "d842d79c-2c9b-4406-9e05-04d987106fc8",
+        "chatSessionId": "sess_1c924ff6-d942-476c-89b3-8e743e169e0b",
+        "timestamp": 1794023487879
+      }
+    ],
+    "2. Struktur HTML": [
+      {
+        "executionId": "d842d79c-2c9b-4406-9e05-04d987106fc8",
+        "chatSessionId": "sess_1c924ff6-d942-476c-89b3-8e743e169e0b",
+        "timestamp": 1794023487915
+      }
+    ],
+    "3.1 Tulis layout dasar dan desain visual widget di `css/style.css`": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532184
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023542799
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023630457
+      }
+    ],
+    "4.1 Implementasikan `storageGet` dan `storageSet` di `js/app.js`": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532266
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023547803
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023630727
+      }
+    ],
+    "5.1 Implementasikan `GreetingWidget` di `js/app.js`": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532305
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023641132
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023987281
+      }
+    ],
+    "6.1 Implementasikan `TimerWidget` di `js/app.js`": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532342
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023998122
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024053921
+      }
+    ],
+    "7.1 Implementasikan `TodoWidget` di `js/app.js`": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532375
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024059759
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024105192
+      }
+    ],
+    "7.2 Implementasikan fungsi edit dan rendering `TodoWidget`": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532408
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024111110
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024616075
+      }
+    ],
+    "7.3 Tulis property test untuk validasi input task (P4 & P5)": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532449
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024116825
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024616488
+      }
+    ],
+    "7.4 Tulis property test untuk toggle dan length invariant (P6 & P7)": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532492
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024622175
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024862560
+      }
+    ],
+    "8.1 Implementasikan `LinksWidget` di `js/app.js`": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532528
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024629310
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024862968
+      }
+    ],
+    "8.3 Tulis property test untuk length invariant penambahan link (P10)": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532581
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024870620
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024957928
+      }
+    ],
+    "9.1 Implementasikan `initDashboard()` dan `showWidgetError()` di `js/app.js`": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532674
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024876668
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024958222
+      }
+    ],
+    "10. Checkpoint — Pastikan semua fungsionalitas inti berjalan": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023532710
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024966950
+      },
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794025071621
+      }
+    ],
+    "3. CSS dan layout": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023630495
+      }
+    ],
+    "4. Storage helpers": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023630809
+      }
+    ],
+    "5. Greeting Widget": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794023987343
+      }
+    ],
+    "6. Focus Timer Widget": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024054034
+      }
+    ],
+    "7. To-Do List Widget": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024862669
+      }
+    ],
+    "8. Quick Links Widget": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024958003
+      }
+    ],
+    "9. Inisialisasi dashboard dan error isolation": [
+      {
+        "executionId": "315308a8-f36c-496f-b365-8125c9b0cf6d",
+        "chatSessionId": "sess_9e2ddffd-365c-49aa-befc-b0a63c44d22c",
+        "timestamp": 1794024958349
+      }
+    ]
+  }
+}

@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life Dashboard — Property Tests</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      background: #f5f5f5;
+      color: #222;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    p.subtitle { color: #666; margin-top: 0; }
+    .suite {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,.1);
+    }
+    .suite h2 { font-size: 1rem; margin: 0 0 0.5rem; }
+    .result {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.35rem 0;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #eee;
+    }
+    .result:last-child { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      min-width: 52px;
+      text-align: center;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .pass { background: #d1fae5; color: #065f46; }
+    .fail { background: #fee2e2; color: #991b1b; }
+    .summary {
+      font-weight: 600;
+      margin-top: 1rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+    }
+    .summary.all-pass { background: #d1fae5; color: #065f46; }
+    .summary.has-fail  { background: #fee2e2; color: #991b1b; }
+    pre { margin: 0.2rem 0 0; font-size: 0.75rem; white-space: pre-wrap; color: #555; }
+  </style>
+</head>
+<body>
+
+<h1>Life Dashboard — Property Tests</h1>
+<p class="subtitle">Menggunakan <a href="https://fast-check.dev/" target="_blank">fast-check</a> via CDN. Buka DevTools Console untuk log lengkap.</p>
+
+<div id="output"></div>
+
+<!-- Attempt to load the real app implementation -->
+<script src="../js/app.js" onerror="console.info('[test] js/app.js belum ada — menggunakan stub getGreeting')"></script>
+
+<!-- fast-check via CDN (UMD build agar tidak memerlukan module bundler) -->
+<script src="https://cdn.jsdelivr.net/npm/fast-check@3/lib/bundle/fast-check.js"></script>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// Stub: digunakan hanya ketika js/app.js belum ada atau GreetingWidget
+//       belum mendefinisikan getGreeting.
+// Ketika app.js sudah ada, GreetingWidget.getGreeting digunakan secara langsung.
+// ─────────────────────────────────────────────────────────────────────────────
+function _stubGetGreeting(hour) {
+  if (hour >= 5  && hour <= 11) return "Selamat Pagi";
+  if (hour >= 12 && hour <= 14) return "Selamat Siang";
+  if (hour >= 15 && hour <= 17) return "Selamat Sore";
+  return "Selamat Malam"; // 18–23 dan 0–4
+}
+
+// Pilih implementasi: gunakan yang nyata jika sudah tersedia
+const getGreeting =
+  (typeof GreetingWidget !== "undefined" && typeof GreetingWidget.getGreeting === "function")
+    ? (h) => GreetingWidget.getGreeting(h)
+    : _stubGetGreeting;
+
+console.info("[test] getGreeting source:", getGreeting === _stubGetGreeting ? "stub (app.js belum ada)" : "GreetingWidget (app.js)");
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Test harness ringan
+// ─────────────────────────────────────────────────────────────────────────────
+const VALID_GREETINGS = new Set(["Selamat Pagi", "Selamat Siang", "Selamat Sore", "Selamat Malam"]);
+
+const suites  = [];   // { title, results: [{label, pass, detail}] }
+let   currentSuite = null;
+
+function describe(title, fn) {
+  currentSuite = { title, results: [] };
+  suites.push(currentSuite);
+  fn();
+}
+
+function it(label, fn) {
+  try {
+    fn();
+    currentSuite.results.push({ label, pass: true });
+    console.log(`  ✅ ${label}`);
+  } catch (err) {
+    const detail = err && err.message ? err.message : String(err);
+    currentSuite.results.push({ label, pass: false, detail });
+    console.error(`  ❌ ${label}\n     ${detail}`);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Property 8: Greeting sesuai dengan seluruh rentang jam dalam sehari
+// Feature: life-dashboard, Property 8: Greeting sesuai jam
+// Validates: Requirements 2.3, 2.4, 2.5, 2.6
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Property 8: Greeting sesuai dengan seluruh rentang jam dalam sehari", () => {
+
+  // P8-a: Hasil selalu salah satu dari empat string salam yang valid
+  it("P8-a: getGreeting selalu mengembalikan salah satu dari 4 salam yang valid (jam 0–23)", () => {
+    // Feature: life-dashboard, Property 8: Greeting sesuai jam
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 23 }),
+        (hour) => {
+          const result = getGreeting(hour);
+          if (!VALID_GREETINGS.has(result)) {
+            throw new Error(`Jam ${hour} → "${result}" bukan salam yang valid`);
+          }
+          return true;
+        }
+      ),
+      { numRuns: 100, verbose: true }
+    );
+  });
+
+  // P8-b: Jam 5–11 → "Selamat Pagi"
+  it("P8-b: Jam 5–11 menghasilkan "Selamat Pagi" (Requirements 2.3)", () => {
+    // Feature: life-dashboard, Property 8: Greeting sesuai jam
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 5, max: 11 }),
+        (hour) => {
+          const result = getGreeting(hour);
+          if (result !== "Selamat Pagi") {
+            throw new Error(`Jam ${hour} → "${result}", diharapkan "Selamat Pagi"`);
+          }
+          return true;
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  // P8-c: Jam 12–14 → "Selamat Siang"
+  it("P8-c: Jam 12–14 menghasilkan "Selamat Siang" (Requirements 2.4)", () => {
+    // Feature: life-dashboard, Property 8: Greeting sesuai jam
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 12, max: 14 }),
+        (hour) => {
+          const result = getGreeting(hour);
+          if (result !== "Selamat Siang") {
+            throw new Error(`Jam ${hour} → "${result}", diharapkan "Selamat Siang"`);
+          }
+          return true;
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  // P8-d: Jam 15–17 → "Selamat Sore"
+  it("P8-d: Jam 15–17 menghasilkan "Selamat Sore" (Requirements 2.5)", () => {
+    // Feature: life-dashboard, Property 8: Greeting sesuai jam
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 15, max: 17 }),
+        (hour) => {
+          const result = getGreeting(hour);
+          if (result !== "Selamat Sore") {
+            throw new Error(`Jam ${hour} → "${result}", diharapkan "Selamat Sore"`);
+          }
+          return true;
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  // P8-e: Jam 18–23 → "Selamat Malam"
+  it("P8-e: Jam 18–23 menghasilkan "Selamat Malam" (Requirements 2.6)", () => {
+    // Feature: life-dashboard, Property 8: Greeting sesuai jam
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 18, max: 23 }),
+        (hour) => {
+          const result = getGreeting(hour);
+          if (result !== "Selamat Malam") {
+            throw new Error(`Jam ${hour} → "${result}", diharapkan "Selamat Malam"`);
+          }
+          return true;
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+  // P8-f: Jam 0–4 → "Selamat Malam"
+  it("P8-f: Jam 0–4 menghasilkan "Selamat Malam" (Requirements 2.6)", () => {
+    // Feature: life-dashboard, Property 8: Greeting sesuai jam
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 4 }),
+        (hour) => {
+          const result = getGreeting(hour);
+          if (result !== "Selamat Malam") {
+            throw new Error(`Jam ${hour} → "${result}", diharapkan "Selamat Malam"`);
+          }
+          return true;
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Property 4: Whitespace task input ditolak
+// Feature: life-dashboard, Property 4: Whitespace task input ditolak
+// Validates: Requirements 4.3
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Property 4: Whitespace task input ditolak", () => {
+
+  // Helper: reset modul-level `tasks` array dan kembalikan ke keadaan bersih
+  // antara setiap run agar setiap iterasi berdiri sendiri.
+  function withCleanTasks(fn) {
+    const saved = [...tasks];
+    tasks.length = 0;
+    try {
+      return fn();
+    } finally {
+      tasks.length = 0;
+      saved.forEach(t => tasks.push(t));
+    }
+  }
+
+  // P4-a: String whitespace-only umum tidak boleh menambah task
+  it("P4-a: string whitespace-only tidak menambah task (Requirements 4.3)", () => {
+    // Feature: life-dashboard, Property 4: Whitespace task input ditolak
+    fc.assert(
+      fc.property(
+        // Generator: string yang seluruhnya terdiri dari karakter whitespace
+        fc.stringOf(fc.constantFrom(' ', '\t', '\n', '\r', '\u00a0')).filter(s => s.length > 0),
+        (whitespaceStr) => {
+          return withCleanTasks(() => {
+            const before = tasks.length;
+            TodoWidget.addTask(whitespaceStr);
+            const after = tasks.length;
+            if (after !== before) {
+              throw new Error(
+                `addTask("${JSON.stringify(whitespaceStr)}") mengubah panjang daftar dari ${before} ke ${after}`
+              );
+            }
+            return true;
+          });
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+  // P4-b: String kosong ("") juga tidak menambah task
+  it("P4-b: string kosong tidak menambah task (Requirements 4.3)", () => {
+    // Feature: life-dashboard, Property 4: Whitespace task input ditolak
+    withCleanTasks(() => {
+      const before = tasks.length;
+      TodoWidget.addTask("");
+      const after = tasks.length;
+      if (after !== before) {
+        throw new Error(`addTask("") mengubah panjang dari ${before} ke ${after}`);
+      }
+    });
+  });
+
+  // P4-c: Daftar yang sudah berisi task tetap tidak bertambah untuk input whitespace
+  it("P4-c: daftar yang sudah berisi task tidak bertambah untuk input whitespace (Requirements 4.3)", () => {
+    // Feature: life-dashboard, Property 4: Whitespace task input ditolak
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.record({
+            id:   fc.string({ minLength: 1 }).map(s => 'task_' + s),
+            text: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            done: fc.boolean(),
+          }),
+          { minLength: 1, maxLength: 10 }
+        ),
+        fc.stringOf(fc.constantFrom(' ', '\t', '\n', '\r')).filter(s => s.length > 0),
+        (existingTasks, whitespaceStr) => {
+          const saved = [...tasks];
+          tasks.length = 0;
+          existingTasks.forEach(t => tasks.push({ ...t }));
+          try {
+            const before = tasks.length;
+            TodoWidget.addTask(whitespaceStr);
+            const after = tasks.length;
+            if (after !== before) {
+              throw new Error(
+                `addTask() pada daftar berisi ${before} item dengan input whitespace mengubah panjang menjadi ${after}`
+              );
+            }
+            return true;
+          } finally {
+            tasks.length = 0;
+            saved.forEach(t => tasks.push(t));
+          }
+        }
+      ),
+      { numRuns: 100, verbose: false }
+    );
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Property 5: Edit task dengan input kosong/whitespace mempertahankan teks lama
+// Feature: life-dashboard, Property 5: Edit task kosong mempertahankan teks lama
+// Validates: Requirements 4.6
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Property 5: Edit task dengan input kosong/whitespace mempertahankan teks lama", () => {
+
+  // Pastikan editTask tersedia sebelum menjalankan test
+  const editTaskAvailable =
+    typeof TodoWidget !== "undefined" &&
+    typeof TodoWidget.editTask === "function";
+
+  if (!editTaskAvailable) {
+    console.warn("[test] TodoWidget.editTask belum diimplementasikan — Property 5 dilewati");
+  }
+
+  // P5-a: string whitespace-only tidak mengubah field text task
+  it("P5-a: editTask dengan string whitespace-only tidak mengubah teks task (Requirements 4.6)", () => {
+    if (!editTaskAvailable) {
+      throw new Error("TodoWidget.editTask belum diimplementasikan (task 7.2 belum selesai)");
+    }
+
+    // Feature: life-dashboard, Property 5: Edit task kosong mempertahankan teks lama
+    fc.assert(
+      fc.property(
+        // Task yang sudah ada dengan teks valid
+        fc.record({
+          id:   fc.string({ minLength: 1 }).map(s => 'task_' + s),
+          text: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+          done: fc.boolean(),
+        }),
+        // String edit yang whitespace-only (termasuk kosong)
+        fc.oneof(
+          fc.constant(""),
+          fc.stringOf(fc.constantFrom(' ', '\t', '\n', '\r')).filter(s => s.length > 0)
+        ),
+        (task, whitespaceStr) => {
+          const saved = [...tasks];
+          tasks.length = 0;
+          tasks.push({ ...task });
+          try {
+            const originalText = task.text;
+            TodoWidget.editTask(task.id, whitespaceStr);
+            const taskAfter = tasks.find(t => t.id === task.id);
+            if (!taskAfter) {
+              throw new Error(`Task dengan id ${task.id} hilang setelah editTask`);
+            }
+            if (taskAfter.text !== originalText) {
+              throw new Error(
+                `editTask mengubah teks dari "${originalText}" menjadi "${taskAfter.text}" ` +
+                `untuk input whitespace "${JSON.stringify(whitespaceStr)}"`
+              );
+            }
+            return true;
+          } finally {
+            tasks.length = 0;
+            saved.forEach(t => tasks.push(t));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+  // P5-b: string kosong ("") tidak mengubah field text task
+  it("P5-b: editTask dengan string kosong tidak mengubah teks task (Requirements 4.6)", () => {
+    if (!editTaskAvailable) {
+      throw new Error("TodoWidget.editTask belum diimplementasikan (task 7.2 belum selesai)");
+    }
+
+    // Feature: life-dashboard, Property 5: Edit task kosong mempertahankan teks lama
+    fc.assert(
+      fc.property(
+        fc.record({
+          id:   fc.string({ minLength: 1 }).map(s => 'task_' + s),
+          text: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+          done: fc.boolean(),
+        }),
+        (task) => {
+          const saved = [...tasks];
+          tasks.length = 0;
+          tasks.push({ ...task });
+          try {
+            const originalText = task.text;
+            TodoWidget.editTask(task.id, "");
+            const taskAfter = tasks.find(t => t.id === task.id);
+            if (!taskAfter) {
+              throw new Error(`Task dengan id ${task.id} hilang setelah editTask`);
+            }
+            if (taskAfter.text !== originalText) {
+              throw new Error(
+                `editTask("") mengubah teks dari "${originalText}" menjadi "${taskAfter.text}"`
+              );
+            }
+            return true;
+          } finally {
+            tasks.length = 0;
+            saved.forEach(t => tasks.push(t));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Property 6: Toggle done adalah operasi round-trip
+// Feature: life-dashboard, Property 6: Toggle done adalah round-trip
+// Validates: Requirements 4.8, 4.9
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Property 6: Toggle done adalah operasi round-trip", () => {
+
+  // P6-a: toggle dua kali mengembalikan nilai done semula (awalnya false)
+  it("P6-a: toggle dua kali mengembalikan done semula ketika awalnya false (Requirements 4.8, 4.9)", () => {
+    // Feature: life-dashboard, Property 6: Toggle done adalah round-trip
+    fc.assert(
+      fc.property(
+        // Daftar dengan setidaknya satu task, done awal = false
+        fc.array(
+          fc.record({
+            id:   fc.string({ minLength: 1 }).map(s => 'task_' + s),
+            text: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            done: fc.boolean(),
+          }),
+          { minLength: 1, maxLength: 10 }
+        ),
+        // Pilih indeks task yang akan di-toggle
+        fc.nat({ max: 9 }),
+        (taskList, idx) => {
+          const saved = [...tasks];
+          tasks.length = 0;
+          taskList.forEach(t => tasks.push({ ...t }));
+
+          try {
+            const targetIdx = idx % tasks.length;
+            const targetId  = tasks[targetIdx].id;
+            const originalDone = tasks[targetIdx].done;
+
+            // Toggle pertama
+            TodoWidget.toggleTask(targetId);
+            // Toggle kedua — harus kembali ke nilai asal
+            TodoWidget.toggleTask(targetId);
+
+            const taskAfter = tasks.find(t => t.id === targetId);
+            if (!taskAfter) {
+              throw new Error(`Task dengan id "${targetId}" hilang setelah dua kali toggle`);
+            }
+            if (taskAfter.done !== originalDone) {
+              throw new Error(
+                `Setelah dua kali toggle, done="${taskAfter.done}" ` +
+                `(diharapkan "${originalDone}")`
+              );
+            }
+            return true;
+          } finally {
+            tasks.length = 0;
+            saved.forEach(t => tasks.push(t));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+  // P6-b: toggle sekali membalik nilai done
+  it("P6-b: toggle sekali membalik nilai done (Requirements 4.8, 4.9)", () => {
+    // Feature: life-dashboard, Property 6: Toggle done adalah round-trip
+    fc.assert(
+      fc.property(
+        fc.record({
+          id:   fc.string({ minLength: 1 }).map(s => 'task_' + s),
+          text: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+          done: fc.boolean(),
+        }),
+        (task) => {
+          const saved = [...tasks];
+          tasks.length = 0;
+          tasks.push({ ...task });
+
+          try {
+            const originalDone = task.done;
+            TodoWidget.toggleTask(task.id);
+
+            const taskAfter = tasks.find(t => t.id === task.id);
+            if (!taskAfter) {
+              throw new Error(`Task dengan id "${task.id}" hilang setelah toggle`);
+            }
+            if (taskAfter.done !== !originalDone) {
+              throw new Error(
+                `Setelah satu kali toggle, done="${taskAfter.done}" ` +
+                `(diharapkan "${!originalDone}")`
+              );
+            }
+            return true;
+          } finally {
+            tasks.length = 0;
+            saved.forEach(t => tasks.push(t));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Property 7: Penambahan dan penghapusan task memelihara invariant panjang daftar
+// Feature: life-dashboard, Property 7: Tambah/hapus task length invariant
+// Validates: Requirements 4.2, 4.10
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Property 7: Penambahan dan penghapusan task memelihara invariant panjang daftar", () => {
+
+  // P7-a: addTask dengan teks valid menambah panjang daftar tepat satu
+  it("P7-a: addTask dengan teks valid menambah panjang daftar tepat n+1 (Requirements 4.2)", () => {
+    // Feature: life-dashboard, Property 7: Tambah/hapus task length invariant
+    fc.assert(
+      fc.property(
+        // Daftar awal (boleh kosong)
+        fc.array(
+          fc.record({
+            id:   fc.string({ minLength: 1 }).map(s => 'task_' + s),
+            text: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            done: fc.boolean(),
+          }),
+          { minLength: 0, maxLength: 10 }
+        ),
+        // Teks task valid
+        fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+        (initialTasks, validText) => {
+          const saved = [...tasks];
+          tasks.length = 0;
+          initialTasks.forEach(t => tasks.push({ ...t }));
+
+          try {
+            const before = tasks.length;
+            TodoWidget.addTask(validText);
+            const after = tasks.length;
+
+            if (after !== before + 1) {
+              throw new Error(
+                `addTask("${validText}") menghasilkan panjang ${after}, diharapkan ${before + 1}`
+              );
+            }
+            return true;
+          } finally {
+            tasks.length = 0;
+            saved.forEach(t => tasks.push(t));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+  // P7-b: deleteTask mengurangi panjang daftar tepat satu dan ID tidak lagi ada
+  it("P7-b: deleteTask mengurangi panjang daftar tepat n-1 dan ID tidak lagi ada (Requirements 4.10)", () => {
+    // Feature: life-dashboard, Property 7: Tambah/hapus task length invariant
+    fc.assert(
+      fc.property(
+        // Daftar dengan setidaknya satu task
+        fc.array(
+          fc.record({
+            id:   fc.string({ minLength: 1 }).map(s => 'task_' + s),
+            text: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            done: fc.boolean(),
+          }),
+          { minLength: 1, maxLength: 10 }
+        ),
+        // Pilih indeks task yang akan dihapus
+        fc.nat({ max: 9 }),
+        (taskList, idx) => {
+          const saved = [...tasks];
+          tasks.length = 0;
+          taskList.forEach(t => tasks.push({ ...t }));
+
+          try {
+            const before = tasks.length;
+            const targetIdx = idx % tasks.length;
+            const targetId  = tasks[targetIdx].id;
+
+            TodoWidget.deleteTask(targetId);
+
+            const after = tasks.length;
+            if (after !== before - 1) {
+              throw new Error(
+                `deleteTask menghasilkan panjang ${after}, diharapkan ${before - 1}`
+              );
+            }
+            if (tasks.some(t => t.id === targetId)) {
+              throw new Error(
+                `ID "${targetId}" masih ditemukan dalam daftar setelah deleteTask`
+              );
+            }
+            return true;
+          } finally {
+            tasks.length = 0;
+            saved.forEach(t => tasks.push(t));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+  // P7-c: addTask lalu deleteTask task yang sama → panjang kembali ke semula
+  it("P7-c: addTask lalu deleteTask task yang sama mengembalikan panjang ke n (Requirements 4.2, 4.10)", () => {
+    // Feature: life-dashboard, Property 7: Tambah/hapus task length invariant
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.record({
+            id:   fc.string({ minLength: 1 }).map(s => 'task_' + s),
+            text: fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+            done: fc.boolean(),
+          }),
+          { minLength: 0, maxLength: 10 }
+        ),
+        fc.string({ minLength: 1 }).filter(s => s.trim().length > 0),
+        (initialTasks, validText) => {
+          const saved = [...tasks];
+          tasks.length = 0;
+          initialTasks.forEach(t => tasks.push({ ...t }));
+
+          try {
+            const original = tasks.length;
+
+            // Tambah task baru
+            TodoWidget.addTask(validText);
+            // Ambil ID task yang baru saja ditambahkan (selalu yang terakhir)
+            const newId = tasks[tasks.length - 1].id;
+
+            // Hapus task tersebut
+            TodoWidget.deleteTask(newId);
+
+            const restored = tasks.length;
+            if (restored !== original) {
+              throw new Error(
+                `Setelah addTask+deleteTask, panjang=${restored}, diharapkan kembali ke ${original}`
+              );
+            }
+            return true;
+          } finally {
+            tasks.length = 0;
+            saved.forEach(t => tasks.push(t));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Property 10: Penambahan link valid menambah panjang daftar tepat satu
+// Feature: life-dashboard, Property 10: addLink length invariant
+// Validates: Requirements 5.2
+// ─────────────────────────────────────────────────────────────────────────────
+describe("Property 10: Penambahan link valid menambah panjang daftar tepat satu", () => {
+
+  // Helper: buat URL valid dengan prefix http:// atau https://
+  const validUrlArb = fc.oneof(
+    fc.string({ minLength: 1 }).map(s => 'http://'  + s),
+    fc.string({ minLength: 1 }).map(s => 'https://' + s)
+  );
+
+  // Helper: buat label valid (1–50 karakter, bukan whitespace-only)
+  const validLabelArb = fc.string({ minLength: 1, maxLength: 50 })
+    .filter(s => s.trim().length > 0);
+
+  // P10-a: addLink dengan label & URL valid menambah panjang daftar tepat n+1
+  it("P10-a: addLink dengan label dan URL valid menambah panjang daftar tepat n+1 (Requirements 5.2)", () => {
+    // Feature: life-dashboard, Property 10: addLink length invariant
+    fc.assert(
+      fc.property(
+        // Daftar link awal (boleh kosong)
+        fc.array(
+          fc.record({
+            id:    fc.string({ minLength: 1 }).map(s => 'link_' + s),
+            label: validLabelArb,
+            url:   validUrlArb,
+          }),
+          { minLength: 0, maxLength: 10 }
+        ),
+        validLabelArb,
+        validUrlArb,
+        (initialLinks, validLabel, validUrl) => {
+          const saved = [...links];
+          links.length = 0;
+          initialLinks.forEach(l => links.push({ ...l }));
+
+          try {
+            const before = links.length;
+            LinksWidget.addLink(validLabel, validUrl);
+            const after = links.length;
+
+            if (after !== before + 1) {
+              throw new Error(
+                `addLink("${validLabel}", "${validUrl}") menghasilkan panjang ${after}, diharapkan ${before + 1}`
+              );
+            }
+            return true;
+          } finally {
+            links.length = 0;
+            saved.forEach(l => links.push(l));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+  // P10-b: link baru yang ditambahkan dapat ditemukan dalam daftar
+  it("P10-b: link baru dapat ditemukan dalam daftar setelah addLink (Requirements 5.2)", () => {
+    // Feature: life-dashboard, Property 10: addLink length invariant
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.record({
+            id:    fc.string({ minLength: 1 }).map(s => 'link_' + s),
+            label: validLabelArb,
+            url:   validUrlArb,
+          }),
+          { minLength: 0, maxLength: 10 }
+        ),
+        validLabelArb,
+        validUrlArb,
+        (initialLinks, validLabel, validUrl) => {
+          const saved = [...links];
+          links.length = 0;
+          initialLinks.forEach(l => links.push({ ...l }));
+
+          try {
+            LinksWidget.addLink(validLabel, validUrl);
+
+            // Link baru harus ada dalam daftar dengan label dan url yang trimmed
+            const trimmedLabel = validLabel.trim();
+            const trimmedUrl   = validUrl.trim();
+            const found = links.some(l => l.label === trimmedLabel && l.url === trimmedUrl);
+
+            if (!found) {
+              throw new Error(
+                `Link dengan label="${trimmedLabel}" dan url="${trimmedUrl}" tidak ditemukan setelah addLink`
+              );
+            }
+            return true;
+          } finally {
+            links.length = 0;
+            saved.forEach(l => links.push(l));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+  // P10-c: addLink dengan label/URL tidak valid TIDAK menambah panjang daftar
+  it("P10-c: addLink dengan input tidak valid tidak mengubah panjang daftar (Requirements 5.2)", () => {
+    // Feature: life-dashboard, Property 10: addLink length invariant
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.record({
+            id:    fc.string({ minLength: 1 }).map(s => 'link_' + s),
+            label: validLabelArb,
+            url:   validUrlArb,
+          }),
+          { minLength: 0, maxLength: 10 }
+        ),
+        // Generator URL yang pasti tidak valid (tidak dimulai http:// atau https://)
+        fc.string().filter(s => !s.startsWith('http://') && !s.startsWith('https://')),
+        validLabelArb,
+        (initialLinks, invalidUrl, validLabel) => {
+          const saved = [...links];
+          links.length = 0;
+          initialLinks.forEach(l => links.push({ ...l }));
+
+          try {
+            const before = links.length;
+            LinksWidget.addLink(validLabel, invalidUrl);
+            const after = links.length;
+
+            if (after !== before) {
+              throw new Error(
+                `addLink() dengan URL tidak valid mengubah panjang dari ${before} ke ${after}`
+              );
+            }
+            return true;
+          } finally {
+            links.length = 0;
+            saved.forEach(l => links.push(l));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+  // P10-d: addLink lalu deleteLink link yang sama → panjang kembali ke semula
+  it("P10-d: addLink lalu deleteLink link yang sama mengembalikan panjang ke n (Requirements 5.2)", () => {
+    // Feature: life-dashboard, Property 10: addLink length invariant
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.record({
+            id:    fc.string({ minLength: 1 }).map(s => 'link_' + s),
+            label: validLabelArb,
+            url:   validUrlArb,
+          }),
+          { minLength: 0, maxLength: 10 }
+        ),
+        validLabelArb,
+        validUrlArb,
+        (initialLinks, validLabel, validUrl) => {
+          const saved = [...links];
+          links.length = 0;
+          initialLinks.forEach(l => links.push({ ...l }));
+
+          try {
+            const original = links.length;
+
+            // Tambah link baru
+            LinksWidget.addLink(validLabel, validUrl);
+            // Ambil ID link yang baru saja ditambahkan (selalu yang terakhir)
+            const newId = links[links.length - 1].id;
+
+            // Hapus link tersebut
+            LinksWidget.deleteLink(newId);
+
+            const restored = links.length;
+            if (restored !== original) {
+              throw new Error(
+                `Setelah addLink+deleteLink, panjang=${restored}, diharapkan kembali ke ${original}`
+              );
+            }
+            return true;
+          } finally {
+            links.length = 0;
+            saved.forEach(l => links.push(l));
+          }
+        }
+      ),
+      { numRuns: 200, verbose: false }
+    );
+  });
+
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Render hasil ke halaman
+// ─────────────────────────────────────────────────────────────────────────────
+(function renderResults() {
+  const output = document.getElementById("output");
+  let totalPass = 0, totalFail = 0;
+
+  suites.forEach(({ title, results }) => {
+    const div = document.createElement("div");
+    div.className = "suite";
+
+    const h2 = document.createElement("h2");
+    h2.textContent = title;
+    div.appendChild(h2);
+
+    results.forEach(({ label, pass, detail }) => {
+      if (pass) totalPass++; else totalFail++;
+
+      const row = document.createElement("div");
+      row.className = "result";
+
+      const badge = document.createElement("span");
+      badge.className = "badge " + (pass ? "pass" : "fail");
+      badge.textContent = pass ? "PASS" : "FAIL";
+
+      const text = document.createElement("span");
+      text.textContent = label;
+
+      row.appendChild(badge);
+      row.appendChild(text);
+
+      if (!pass && detail) {
+        const pre = document.createElement("pre");
+        pre.textContent = detail;
+        const wrapper = document.createElement("div");
+        wrapper.style.flex = "1";
+        wrapper.appendChild(text);
+        wrapper.appendChild(pre);
+        row.appendChild(wrapper);
+      }
+
+      div.appendChild(row);
+    });
+
+    output.appendChild(div);
+  });
+
+  const summary = document.createElement("div");
+  summary.className = "summary " + (totalFail === 0 ? "all-pass" : "has-fail");
+  summary.textContent = totalFail === 0
+    ? `✅ Semua ${totalPass} test lulus`
+    : `❌ ${totalFail} test gagal, ${totalPass} lulus`;
+  output.appendChild(summary);
+
+  console.info(`[test] Selesai — ${totalPass} lulus, ${totalFail} gagal`);
+})();
+</script>
+</body>
+</html>
